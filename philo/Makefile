@@ -1,14 +1,16 @@
 
-.PHONY : all test clean fclean re
+.PHONY : all sanit test test1 test2 clean fclean re
 
 NAME := philosophers.a
 SOFT_NAME := philosophers
+SOFT_NAMES := philosopher
 
 CC := gcc
-FLAGS := -Wall -Wextra -Werror -I includes/ -lpthread -g3
-# -fsanitize=address
+FLAGS := -Wall -Wextra -Werror -I includes/ -pthread -g3
+FLAGS2 := -fsanitize=address -g3
 SRC_DIR := sources/
 OBJ_DIR := objects/
+OBJ_DIR2 := objects2/
 AR := ar rc
 RM := rm
 LEAK := valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes
@@ -31,6 +33,7 @@ OBJS = $(SRCS:%.c=%.o)
 OBJ = $(addprefix $(OBJ_DIR),$(OBJS))
 
 OBJF := .cache_exists
+OBJF2 := .cache_exists2
 
 all : ${SOFT_NAME}
 
@@ -52,17 +55,27 @@ ${SOFT_NAME} : ${NAME}
 $(OBJF) :
 	@mkdir -p ${OBJ_DIR}
 
-test :
-	make all
+sanit : ${SOFT_NAMES}
+
+${SOFT_NAMES} : ${NAME}
+	@echo "${BLUE}###${NC}Creation du fichier ${SOFT_NAMES}${BLUE}###${ORANGE}"
+	${CC} ${NAME} ${FLAGS2} -o ${SOFT_NAMES}
+	@echo "${NC}"
+
+$(OBJF2) :
+	@mkdir -p ${OBJ_DIR}
+
+test : all
 	./${SOFT_NAME} 3 5000 500 500
 
-test1 :
-	make all
-	$(LEAK) ./${SOFT_NAME} 3 50000 5000 5000
+tests : sanit
+	./${SOFT_NAMES} 3 5000 500 500
 
-test2 :
-	make all
-	$(LEAK2) ./${SOFT_NAME} 3 100 100 100
+test1 : all
+	$(LEAK) ./${SOFT_NAME} 3 5000 500 500
+
+test2 : all
+	$(LEAK2) ./${SOFT_NAME} 3 5000 500 500
 
 clean : 
 	@echo "${RED}###${NC}Nettoyage des fichiers .o${RED}###"
@@ -71,7 +84,7 @@ clean :
 
 fclean : clean
 	@echo "${RED}###${NC}Nettoyage d'archives et de Softs${RED}###"
-	${RM} -f ${NAME} ${SOFT_NAME}
+	${RM} -f ${NAME} ${SOFT_NAME} ${NAMES} ${SOFT_NAMES}
 	@echo "${GREEN}###${NC}Nettoyage OK${GREEN}###${NC}\n"
 
 re : fclean all

@@ -6,7 +6,7 @@
 /*   By: chillion <chillion@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/14 11:59:07 by chillion          #+#    #+#             */
-/*   Updated: 2022/12/21 19:01:54 by chillion         ###   ########.fr       */
+/*   Updated: 2022/12/22 17:58:09 by chillion         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,6 +149,14 @@ before leave or if 1 philo die;
 while I < nbrphilo
 	detach thread philo
 */
+
+typedef struct s_info
+{
+	int				nbr;
+	int				t_die;
+	pthread_t		thread_id;
+}	t_i;
+
 typedef struct s_philosophers
 {
 	int				nbr_philo;
@@ -166,34 +174,33 @@ typedef struct s_philosophers
 	pthread_mutex_t	lockwrite;
 	pthread_mutex_t	lockvalue;
 	pthread_mutex_t	lockeatcount;
+	pthread_t		thread_main;
 	pthread_t		thread_id[1024];
 
+	t_i				*philo;
 	int **i;
 }	t_p;
 
-long int	ft_return_time(t_p *var)
+long int	ft_return_millisec(void* var)
 {
 	(void)var;
 	struct timeval current_time;
 	if (gettimeofday(&current_time, 0) == -1)
 		return (write(2, "gettimeofday Error\n", 20), -1);
-	long int milliseconds = (((current_time.tv_sec * 1000) + current_time.tv_usec));// 1000);
-	// printf("current philo =%d et time to eat = %d\n", var->cur_philo, var->t_eat);
-	// printf("seconds : %ld et micro seconds : %ld et en milli =%f\n", current_time.tv_sec, current_time.tv_usec, milliseconds);
-	// usleep(var->t_sleep);
+	long int milliseconds = (current_time.tv_sec * 1000) + (current_time.tv_usec / 1000);
 	return (milliseconds);
 }
 
 int	ft_eat(t_p *var)
 {
-	long int	time = ft_return_time(var);
+	long int	time = ft_return_millisec(var);
 	long int	eat_time = 0;
 
 	(void)var;
 	(void)time;
 	(void)eat_time;
 	sleep(2);
-	eat_time = (ft_return_time(var));
+	eat_time = (ft_return_millisec(var));
 	long int dif = (eat_time - time);
 	printf("Begin eat for eat time = %ld et time eat =%ld et dif=%ld\n", time, eat_time, dif);
 	// printf("var->t_eat=%d, time=%f et eat_time =%f\n", var->t_eat, time, eat_time);
@@ -441,6 +448,132 @@ void	ft_var_value(t_p *var)
 	}
 }
 
+
+long int	ft_return_microsec(void* var)
+{
+	struct timeval current_time;
+	long int microseconds;
+
+	(void)var;
+	if (gettimeofday(&current_time, 0) == -1)
+		return (write(2, "gettimeofday Error\n", 20), -1);
+	microseconds = ((current_time.tv_sec * 1000) + current_time.tv_usec);
+	printf("seconds : %ld et micro seconds : %ld\n", current_time.tv_sec, current_time.tv_usec);
+	return (microseconds);
+}
+
+int	ft_usleep_milli(void *var)
+{
+	long int milliseconds;
+	int limit;
+	long int interval;
+	long int time;
+
+	(void)var;
+	limit = *(int *)var;
+	time = 0;
+	milliseconds = ft_return_millisec(var);
+	while((time) < limit)
+	{
+		interval = ft_return_millisec(var);
+		time = interval - milliseconds;
+	}
+	return (0);
+}
+
+
+
+void	*ft_main_thread(void *arg)
+{
+	(void)arg;
+	t_p *var;
+
+	var = (t_p *)arg;
+	long int time = ft_return_millisec(var);
+	printf("time =%ld\n", time);
+	sleep(3);
+	printf("time =%ld\n", ft_return_millisec(var));
+	usleep(3000000);
+	printf("time =%ld\n", ft_return_millisec(var));
+	ft_usleep_milli((void *)&var->t_die);
+	printf("time =%ld\n", ft_return_millisec(var));
+	ft_usleep_milli((void *)&var->t_die);
+	printf("time =%ld\n", ft_return_millisec(var));
+	ft_usleep_milli((void *)&var->t_die);
+	printf("time =%ld\n", ft_return_millisec(var));
+	ft_usleep_milli((void *)&var->t_die);
+	printf("time =%ld\n", ft_return_millisec(var));
+	ft_usleep_milli((void *)&var->t_die);
+	printf("time =%ld\n", ft_return_millisec(var));
+	ft_usleep_milli((void *)&var->t_die);
+	printf("time =%ld\n", ft_return_millisec(var));
+
+
+
+	
+/*
+	int	j;
+	t_p *var;
+
+	var = (t_p *)arg;
+	j = 0;
+	while(j < var->nbr_philo)
+	{
+		var->i[j] = (int *)malloc(sizeof(long int) * (5));
+		var->i[j][0] = (j + 1);
+		var->i[j][1] = 0;
+		var->i[j][2] = 0;
+		var->i[j][3] = var->t_die;
+		var->i[j][4] = 0;
+		j++;
+	}
+	while (var->cur_philo < var->nbr_philo)
+	{
+		if (pthread_create(&var->thread_id[var->cur_philo], NULL, ft_philo_life, (void *)&var) != 0)
+			return ((void *)&var->cur_philo);
+		var->i[var->cur_philo][1] = (var->thread_id[var->cur_philo]);
+		printf("Before Thread, thread_id[%d]=%d\n", var->i[var->cur_philo][0], var->i[var->cur_philo][1]);
+		// printf("Before Thread, thread_id[%d]=%ld\n", (var->cur_philo + 1), var->thread_id[(var->cur_philo)]);
+		usleep(10000);
+		var->cur_philo++;
+	}
+	var->cur_philo2 = 0;
+	usleep(1000);
+	while (var->cur_philo2 < var->nbr_philo)
+	{
+		// sleep(5);
+		if (pthread_join(var->thread_id[var->cur_philo2], NULL) != 0)
+		{
+			j = var->cur_philo + var->cur_philo2;
+			return((void *)&j);
+		}
+		usleep(1000);
+		var->cur_philo2++;
+	}
+	// if(1 PHILO DIE OR ALL PHILO EAT)
+	//	pthread_detach(var.thread_main);
+*/
+	return (0);
+}
+
+void	ft_test(void *arg)
+{
+	long int	time;
+	long int	time_bdie;
+	t_p *var;
+	
+	var = (t_p *)arg;
+	time = ft_return_millisec(var);
+	time_bdie = ft_return_millisec(var) + var->t_die;
+	while(time < time_bdie)
+	{
+		if (var->nbr_philo > 1)
+		{
+			if(var->tfork[])
+		}
+	}
+}
+
 int	main(int argc, char **argv)
 {
 	t_p var;
@@ -459,39 +592,15 @@ int	main(int argc, char **argv)
 		return (printf("\n mutex init has failed\n"), 1);
 	if (pthread_mutex_init(&var.lockvalue, NULL) != 0)
 		return (printf("\n mutex init has failed\n"), 1);
-	int	j = 0;
+	
 	var.i = (int **)malloc(sizeof(int *) * (var.nbr_philo + 1));
 	if (!var.i)
 		return (0);
 	var.i[var.nbr_philo] = 0;
-	while(j < var.nbr_philo)
-	{
-		var.i[j] = (int *)malloc(sizeof(long int) * (5));
-		var.i[j][0] = (j + 1);
-		var.i[j][1] = 0;
-		var.i[j][2] = 0;
-		var.i[j][3] = var.t_die;
-		var.i[j][4] = 0;
-		j++;
-	}
-	while (var.cur_philo < var.nbr_philo)
-	{
-		pthread_create(&var.thread_id[var.cur_philo], NULL, ft_philo_life, (void *)&var);
-		var.i[var.cur_philo][1] = (var.thread_id[var.cur_philo]);
-		printf("Before Thread, thread_id[%d]=%d\n", var.i[var.cur_philo][0], var.i[var.cur_philo][1]);
-		// printf("Before Thread, thread_id[%d]=%ld\n", (var.cur_philo + 1), var.thread_id[(var.cur_philo)]);
-		usleep(10000);
-		var.cur_philo++;
-	}
-	var.cur_philo2 = 0;
-	usleep(1000);
-	while (var.cur_philo2 < var.nbr_philo)
-	{
-		// sleep(5);
-		pthread_join(var.thread_id[var.cur_philo2], NULL);
-		usleep(1000);
-		var.cur_philo2++;
-	}
+	if (pthread_create(&var.thread_main, NULL, ft_main_thread, (void *)&var) != 0)
+		return (1);
+	if (pthread_join(var.thread_main, NULL) != 0)
+		return(2);
 	// usleep(1000);
 	pthread_mutex_destroy(&var.lockeat);
 	pthread_mutex_destroy(&var.locksleep);
