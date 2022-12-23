@@ -27,6 +27,7 @@ CYAN = \033[0;36m
 NC = \033[0m
 
 SRCS =	philosophers.c \
+		ft_init_var.c \
 
 OBJS = $(SRCS:%.c=%.o)
 
@@ -65,8 +66,10 @@ ${SOFT_NAMES} : ${NAME}
 $(OBJF2) :
 	@mkdir -p ${OBJ_DIR}
 
+
+# die // eat // sleep
 test : all
-	./${SOFT_NAME} 3 5000 500 500
+	./${SOFT_NAME} 3 2000 3000 3000
 
 tests : sanit
 	./${SOFT_NAMES} 3 5000 500 500
