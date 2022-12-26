@@ -66,7 +66,10 @@ int	ft_init_arg(t_d *var, int argc, char **argv)
 	var->t_eat = ft_digit_only_arg(argv[3]);
 	var->t_sleep = ft_digit_only_arg(argv[4]);
 	if (argc == 6)
+	{
+		var->format = 1;
 		var->nbr_each_philo_eat = ft_digit_only_arg(argv[5]);
+	}
 	printf("\nphilo=%d, t_die=%d, t_eat=%d, t_sleep=%d\n",var->nbr_of_philo, var->t_die, var->t_eat, var->t_sleep);
 	if (argc == 6)
 		printf("nbr_each_philo_eat=%d,\n", var->nbr_each_philo_eat);
@@ -83,6 +86,7 @@ int	ft_init_var(t_d *var)
 	var->dead = 0;
 	var->nbr_each_philo_eat = 0;
 	var->fork = 0;
+	var->format = 0;
 	return (0);
 }
 
@@ -97,8 +101,9 @@ void	ft_destroy_mutex(t_d *var)
 		i++;
 	}
 	free(var->fork);
-	pthread_mutex_destroy(&var->lockeat);
-	pthread_mutex_destroy(&var->locksleep);
+	pthread_mutex_destroy(&var->lockeatcount);
+	pthread_mutex_destroy(&var->lockdead);
 	pthread_mutex_destroy(&var->lockwrite);
 	pthread_mutex_destroy(&var->lockvalue);
+	pthread_mutex_destroy(&var->lockstatus);
 }

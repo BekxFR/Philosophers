@@ -69,13 +69,13 @@ $(OBJF2) :
 
 # die // eat // sleep
 test : all
-	./${SOFT_NAME} 3 2000 3000 3000
+	./${SOFT_NAME} 9 2000 3000 3000 2
 
 tests : sanit
-	./${SOFT_NAMES} 3 5000 500 500
+	./${SOFT_NAMES} 3 5000 500 500 2
 
 test1 : all
-	$(LEAK) ./${SOFT_NAME} 3 5000 500 500
+	$(LEAK) ./${SOFT_NAME} 3 5000 500 500 2
 
 test2 : all
 	$(LEAK2) ./${SOFT_NAME} 3 5000 500 500

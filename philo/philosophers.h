@@ -16,6 +16,8 @@ typedef struct s_philo
 	int				index;
 	int				t_die;
 	int				t_eat;
+	long int		t_n_eat;
+	int				need_eat;
 	int				t_sleep;
 	enum			{EAT,SLEEP,THINK,WAIT,DEAD} status ;
 	int				fright;
@@ -33,9 +35,10 @@ typedef struct s_data
 	int				t_sleep;
 	int				nbr_of_philo;
 	int				dead;
+	int				format;
 	int				nbr_each_philo_eat;
-	pthread_mutex_t	lockeat;
-	pthread_mutex_t	locksleep;
+	pthread_mutex_t	lockdead;
+	pthread_mutex_t	lockstatus;
 	pthread_mutex_t	lockwrite;
 	pthread_mutex_t	lockvalue;
 	pthread_mutex_t	lockeatcount;
