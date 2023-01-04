@@ -72,10 +72,11 @@ test : all
 	./${SOFT_NAME} 9 2000 3000 3000 2
 
 tests : sanit
-	./${SOFT_NAMES} 3 5000 500 500 2
+	./${SOFT_NAMES} 2 5500 2500 2500 1
 
 test1 : all
-	$(LEAK) ./${SOFT_NAME} 3 5000 500 500 2
+#	$(LEAK) ./${SOFT_NAME} 2 8000 500 500
+	./${SOFT_NAME} 2 8000 500 500
 
 test2 : all
 	$(LEAK2) ./${SOFT_NAME} 3 5000 500 500
