@@ -1,16 +1,13 @@
 
-.PHONY : all sanit test test1 test2 clean fclean re
+.PHONY : all test test1 test2 clean fclean re
 
 NAME := philosophers.a
-SOFT_NAME := philosophers
-SOFT_NAMES := philosopher
+SOFT_NAME := philo
 
 CC := gcc
 FLAGS := -Wall -Wextra -Werror -I includes/ -pthread -g3
-FLAGS2 := -fsanitize=address -g3
 SRC_DIR := sources/
 OBJ_DIR := objects/
-OBJ_DIR2 := objects2/
 AR := ar rc
 RM := rm
 LEAK := valgrind --leak-check=full --show-leak-kinds=all --track-origins=yes
@@ -27,14 +24,17 @@ CYAN = \033[0;36m
 NC = \033[0m
 
 SRCS =	philosophers.c \
-		ft_init_var.c \
+		tools_init.c \
+		tools_eat.c \
+		tools_init_time.c \
+		tools_lock.c \
+		tools_mutex.c \
 
 OBJS = $(SRCS:%.c=%.o)
 
 OBJ = $(addprefix $(OBJ_DIR),$(OBJS))
 
 OBJF := .cache_exists
-OBJF2 := .cache_exists2
 
 all : ${SOFT_NAME}
 
@@ -56,30 +56,14 @@ ${SOFT_NAME} : ${NAME}
 $(OBJF) :
 	@mkdir -p ${OBJ_DIR}
 
-sanit : ${SOFT_NAMES}
-
-${SOFT_NAMES} : ${NAME}
-	@echo "${BLUE}###${NC}Creation du fichier ${SOFT_NAMES}${BLUE}###${ORANGE}"
-	${CC} ${NAME} ${FLAGS2} -o ${SOFT_NAMES}
-	@echo "${NC}"
-
-$(OBJF2) :
-	@mkdir -p ${OBJ_DIR}
-
-
-# die // eat // sleep
 test : all
-	./${SOFT_NAME} 9 2000 3000 3000 2
-
-tests : sanit
-	./${SOFT_NAMES} 2 5500 2500 2500 1
+	./${SOFT_NAME} 2 410 200 200 20
 
 test1 : all
-#	$(LEAK) ./${SOFT_NAME} 2 8000 500 500
-	./${SOFT_NAME} 2 8000 500 500
+	$(LEAK) ./${SOFT_NAME} 2 3000 500 500 5
 
 test2 : all
-	$(LEAK2) ./${SOFT_NAME} 3 5000 500 500
+	$(LEAK2) ./${SOFT_NAME} 3 1500 500 500 5
 
 clean : 
 	@echo "${RED}###${NC}Nettoyage des fichiers .o${RED}###"
@@ -88,7 +72,7 @@ clean :
 
 fclean : clean
 	@echo "${RED}###${NC}Nettoyage d'archives et de Softs${RED}###"
-	${RM} -f ${NAME} ${SOFT_NAME} ${NAMES} ${SOFT_NAMES}
+	${RM} -f ${NAME} ${SOFT_NAME}
 	@echo "${GREEN}###${NC}Nettoyage OK${GREEN}###${NC}\n"
 
 re : fclean all
