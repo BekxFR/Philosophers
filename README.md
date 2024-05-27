@@ -1,5 +1,20 @@
 # Synchronizing Sages: Mastering Concurrency with Philosophers
 
+|    Project Name    |                                                                       philosophers                                                                      |
+| :----------------: | :-------------------------------------------------------------------------------------------------------------------------------------------------: |
+|    Description     |                                             An introduction to multithreading and forking using mutexes with dining philosophers problem                                             |
+|    Technologies    | <a href="#"><img alt="C" src="https://custom-icon-badges.demolab.com/badge/C-03599C.svg?logo=c-in-hexagon&logoColor=white&style=for-the-badge"></a> |
+| External libraries |     memset(), printf(), malloc(), free(), write(), usleep(), gettimeofday(), pthread_create(), pthread_detach(), pthread_join(), pthread_mutex_init(), pthread_mutex_destroy(), pthread_mutex_lock(), pthread_mutex_unlock()      |
+
+##### Usage
+
+```bash
+  gcl https://github.com/BekxFR/Philosophers.git
+  cd philo
+  make
+  ./philo [number_of_philosophers] [time_to_die time_to_eat] [time_to_sleep] [number_of_times_each_philosopher_must_eat]
+```
+
 Embark on a journey into the realm of concurrent programming with the enthralling project titled "Philosophers." This simulation tackles the timeless dilemma of dining philosophers using threads and mutexes, offering invaluable insights into concurrency, synchronization, and resource management.
 
 ### Key Components:
